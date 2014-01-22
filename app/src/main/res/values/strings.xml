@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Etiqueta</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="noconnection">La conexión a internet no se encuentra disponible en estos momentos. Comprueba que tienes conexión WIFI</string>
+    <string name="aceptar">Aceptar</string>
+    <string name="error">Error!</string>
+    <string name="tab1">Selector de producto.</string>
+    <string name="tab2">Posición de la etiqueta. </string>
+    <string name="tab3">Horas y días.</string>
+    <string name="info_buscar_producto">Introduce el código de producto: </string>
+    <string name="buscar_product">Buscar producto</string>
+    <string name="multiple_product">Múltiples Códigos</string>
+    <string name="atencion">Atención!</string>
+    <string name="mensaje_codigo">Debe introducir un código para poder continuar</string>
+    <string name="confirmar">Confirmar</string>
+    <string name="config">Configuración</string>
+    <string name="error_pass">Contrasña incorrecta</string>
+</resources>
