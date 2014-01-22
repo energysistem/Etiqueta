@@ -296,7 +296,6 @@ public class MainActivity extends Activity {
         }
         catch(InterruptedException e) {}
     }
-
     @Override
     protected void onPause()
     {
