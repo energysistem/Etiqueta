@@ -305,7 +305,6 @@ public class MainActivity extends Activity {
     }
 
     private class MiTareaAsincrona extends AsyncTask<Void, Integer, Boolean> {
-
         @Override
         protected Boolean doInBackground(Void... params) {
 
