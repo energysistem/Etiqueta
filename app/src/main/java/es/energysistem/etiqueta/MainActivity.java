@@ -338,6 +338,8 @@ public class MainActivity extends Activity {
                 contador=0;
                 //desbloquea y mantiene encendida la pantalla
                 kl.disableKeyguard();
+
+
                 wl.acquire();
                 Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, DELAYORIG);
                 //Read more: http://www.androidhub4you.com/2013/07/how-to-unlock-android-phone.html#ixzz2jxZE9Yk0
