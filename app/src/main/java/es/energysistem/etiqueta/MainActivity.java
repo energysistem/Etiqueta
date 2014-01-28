@@ -246,7 +246,6 @@ public class MainActivity extends Activity {
         }
 
     }
-
     private void KillStatusBar()
     {
         Process proc = null;
@@ -270,7 +269,6 @@ public class MainActivity extends Activity {
             e.printStackTrace();
         }
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -335,11 +333,8 @@ public class MainActivity extends Activity {
                 //Read more: http://www.androidhub4you.com/2013/07/how-to-unlock-android-phone.html#ixzz2jxZE9Yk0
                 Log.d("DEBUG","SE DESBLOQUEA");
             }
-
-
             tarea2=new MiTareaAsincrona();
             tarea2.execute();
-
         }
         @Override
         protected void onCancelled() {
