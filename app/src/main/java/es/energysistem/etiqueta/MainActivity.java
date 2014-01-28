@@ -4,8 +4,6 @@ package es.energysistem.etiqueta;
 import android.app.AlertDialog;
 import android.app.KeyguardManager;
 import android.app.ProgressDialog;
-import android.app.admin.DevicePolicyManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -58,6 +56,7 @@ public class MainActivity extends Activity {
     private int defTimeOut;
     private static final int DELAY = 1;
     private static final int DELAYORIG = 1800000;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,7 +128,6 @@ public class MainActivity extends Activity {
         KillStatusBar();
         //Crea icono en el escritorio
         CrearIconoLauncher();
-
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -310,9 +308,7 @@ public class MainActivity extends Activity {
 
          tareaLarga();
          return true;
-
         }
-
         @Override
         protected void onPostExecute(Boolean result) {
             if(result)
@@ -323,13 +319,11 @@ public class MainActivity extends Activity {
             if(contador==0)
             {
                 wl.release();
-
                 defTimeOut = Settings.System.getInt(getContentResolver(),Settings.System.SCREEN_OFF_TIMEOUT, DELAY);
                 Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, DELAY);
                 contador=1;
                 Log.d("DEBUG","SE BLOQUEA");
                 Log.d("DEBUG", String.valueOf(defTimeOut));
-
             }
             else
             {
@@ -344,21 +338,14 @@ public class MainActivity extends Activity {
                 Log.d("DEBUG","SE DESBLOQUEA");
             }
 
+
             tarea2=new MiTareaAsincrona();
             tarea2.execute();
 
         }
-
         @Override
         protected void onCancelled() {
             Toast.makeText(MainActivity.this, "Tarea cancelada!", Toast.LENGTH_SHORT).show();
         }
     }
-
-
-
-
 }
-
-
-
