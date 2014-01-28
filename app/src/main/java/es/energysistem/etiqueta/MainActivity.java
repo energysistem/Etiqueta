@@ -313,9 +313,8 @@ public class MainActivity extends Activity {
         protected void onPostExecute(Boolean result) {
             if(result)
                 Toast.makeText(MainActivity.this, "Tarea finalizada!", Toast.LENGTH_SHORT).show();
+            //TODO: Revisar por que al desconectar el cable de depuración no funcionan este metodo. Solo en el s7 Single
 
-            //TODO: Revisar por que al desconectar el cable de depuración no funcionan este metodo.
-            //Comentado para depurar.
             if(contador==0)
             {
                 wl.release();
