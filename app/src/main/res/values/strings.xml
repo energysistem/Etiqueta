@@ -13,8 +13,15 @@
     <string name="buscar_product">Buscar producto</string>
     <string name="multiple_product">Múltiples Códigos</string>
     <string name="atencion">Atención!</string>
-    <string name="mensaje_codigo">Debe introducir un código para poder continuar</string>
+    <string name="mensaje_codigo">Debe introducir un código para poder continuar.</string>
     <string name="confirmar">Confirmar</string>
     <string name="config">Configuración</string>
     <string name="error_pass">Contrasña incorrecta</string>
+    <string name="desc_pos_etiqueta">Selecciona la posición de la etiqueta.</string>
+    <string name="derecha">Derecha</string>
+    <string name="izquierda">Izquierda</string>
+    <string name="desc_derecha">Selecciona derecha para que el logo y la cámara queden arriba.</string>
+    <string name="desc_izquierda">Selecciona izquierda para que el logo y la cámara queden debajo.</string>
+    <string name="desc_hora">Selecciona la hora de encendido y apagado.</string>
+
 </resources>

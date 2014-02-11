@@ -46,7 +46,7 @@ public class MainActivity extends Activity {
     public boolean apagar_encenter=true;
 
     public int contador=1;
-    SharedPreferences prefs;
+    private SharedPreferences prefs;
     //WebView webView;
     String Url;
     private PowerManager pm;
@@ -75,7 +75,6 @@ public class MainActivity extends Activity {
         km = (KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE);
         kl = km .newKeyguardLock("MyKeyguardLock");
         wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "MyWakeLock");
-
 
         //Pantalla completa y mantiene la pantalla encendida
         requestWindowFeature(Window.FEATURE_NO_TITLE);

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+
+    <LinearLayout
+        android:id="@+id/mergetab2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="10dip"
+        android:weightSum="1">
+
+        <LinearLayout
+            android:id="@+id/tab1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="HOME" >
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/scrollView"
+                android:fillViewport="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:text="@string/info_buscar_producto"
+                        android:id="@+id/textView"
+                        android:layout_gravity="center_horizontal" />
+
+                    <CheckBox
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/multiple_product"
+                        android:id="@+id/checkBoxMultiple"
+                        android:layout_gravity="center_horizontal"
+                        android:focusable="true"
+                        android:nextFocusUp="@+id/editText1"/>
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:ems="10"
+                        android:id="@+id/editText1"
+                        android:layout_gravity="center_horizontal"
+                        android:maxLength="5"
+                        android:nextFocusUp="@+id/editText2"/>
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:ems="10"
+                        android:id="@+id/editText2"
+                        android:layout_gravity="center_horizontal"
+                        android:maxLength="5"
+                        android:visibility="gone"
+                        android:nextFocusUp="@+id/editText3"/>
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:ems="10"
+                        android:id="@+id/editText3"
+                        android:layout_gravity="center_horizontal"
+                        android:maxLength="5"
+                        android:visibility="gone"
+                        android:nextFocusUp="@+id/button"/>
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/buscar_product"
+                        android:layout_marginTop="15dp"
+                        android:id="@+id/buttonBuscar"
+                        android:layout_gravity="center_horizontal" />
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/confirmar"
+                        android:id="@+id/buttonConfirmarProduct"
+                        android:layout_gravity="center_horizontal"
+                        android:enabled="false"/>
+
+                    <WebView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/webViewPre"
+                        android:layout_marginTop="20dp"
+                        android:layout_weight="4.61" />
+
+                </LinearLayout>
+            </ScrollView>
+        </LinearLayout>
+
+
+
+
+    </LinearLayout>
+
+</merge>

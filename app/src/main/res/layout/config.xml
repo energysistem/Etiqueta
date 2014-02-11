@@ -8,155 +8,59 @@
 
 
     <TabHost
-            android:id="@+id/tabHost"
+        android:id="@+id/tabHost"
+        android:layout_width="match_parent"
+        android:layout_height="639dp"
+        android:layout_x="0dp"
+        android:layout_y="0dp" >
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="639dp"
-            android:layout_x="0dp"
-            android:layout_y="0dp" >
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
 
-            <LinearLayout
+            <TabWidget
+                android:id="@android:id/tabs"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical" >
+                android:layout_height="wrap_content" >
+            </TabWidget>
 
-                <TabWidget
-                    android:id="@android:id/tabs"
+            <FrameLayout
+                android:id="@android:id/tabcontent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                <LinearLayout
+                    android:id="@+id/tab1"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" >
-                </TabWidget>
+                    android:layout_height="match_parent"
+                    android:contentDescription="HOME"
+                    android:measureWithLargestChild="false">
+                    <include layout="@layout/tab1"/>
 
-                <FrameLayout
-                    android:id="@android:id/tabcontent"
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/tab2"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" >
+                    android:layout_height="match_parent"
+                    android:contentDescription="HOME" >
+                    <include layout="@layout/tab2"/>
+                </LinearLayout>
 
-                     <LinearLayout
-                        android:id="@+id/tab1"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:contentDescription="HOME" >
-
-                         <ScrollView
-                             android:layout_width="match_parent"
-                             android:layout_height="match_parent"
-                             android:id="@+id/scrollView"
-                             android:fillViewport="true">
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textAppearance="?android:attr/textAppearanceLarge"
-                                    android:layout_marginTop="10dp"
-                                    android:layout_marginBottom="10dp"
-                                    android:text="@string/info_buscar_producto"
-                                    android:id="@+id/textView"
-                                    android:layout_gravity="center_horizontal" />
-
-                                <CheckBox
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/multiple_product"
-                                    android:id="@+id/checkBoxMultiple"
-                                    android:layout_gravity="center_horizontal"
-                                    android:focusable="true"
-                                    android:nextFocusUp="@+id/editText1"/>
-
-                                <EditText
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:inputType="number"
-                                    android:ems="10"
-                                    android:id="@+id/editText1"
-                                    android:layout_gravity="center_horizontal"
-                                    android:maxLength="5"
-                                    android:nextFocusUp="@+id/editText2"/>
-
-                                <EditText
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:inputType="number"
-                                    android:ems="10"
-                                    android:id="@+id/editText2"
-                                    android:layout_gravity="center_horizontal"
-                                    android:maxLength="5"
-                                    android:visibility="gone"
-                                    android:nextFocusUp="@+id/editText3"/>
-
-                                <EditText
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:inputType="number"
-                                    android:ems="10"
-                                    android:id="@+id/editText3"
-                                    android:layout_gravity="center_horizontal"
-                                    android:maxLength="5"
-                                    android:visibility="gone"
-                                    android:nextFocusUp="@+id/button"/>
-
-                                <Button
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/buscar_product"
-                                    android:layout_marginTop="15dp"
-                                    android:id="@+id/buttonBuscar"
-                                    android:layout_gravity="center_horizontal" />
-
-                                <Button
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/confirmar"
-                                    android:id="@+id/button2"
-                                    android:layout_gravity="center_horizontal"/>
-
-                                <WebView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="0dp"
-                                    android:id="@+id/webViewPre"
-                                    android:layout_marginTop="20dp"
-                                    android:layout_weight="4.61" />
-
-                            </LinearLayout>
-                        </ScrollView>
-                    </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/tab3"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="HOME">
+                    <include layout="@layout/tab3"/>
 
 
-                    <LinearLayout
-                        android:id="@+id/tab2"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:contentDescription="HOME" >
+                </LinearLayout>
 
-                        <TextView
-                            android:id="@+id/textView2"
-                            android:layout_width="204dp"
-                            android:layout_height="match_parent"
-                            android:paddingLeft="10dp"
-                            android:text="TAB 2"/>
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/tab3"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:contentDescription="HOME" >
-
-                        <TextView
-                            android:id="@+id/textView3"
-                            android:layout_width="204dp"
-                            android:layout_height="match_parent"
-                            android:paddingLeft="10dp"
-                            android:text="TAB 3"/>
-
-                    </LinearLayout>
-
-                </FrameLayout>
-            </LinearLayout>
-        </TabHost>
+            </FrameLayout>
+        </LinearLayout>
+    </TabHost>
 
 </LinearLayout>
