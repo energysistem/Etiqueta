@@ -23,5 +23,7 @@
     <string name="desc_derecha">Selecciona derecha para que el logo y la cámara queden arriba.</string>
     <string name="desc_izquierda">Selecciona izquierda para que el logo y la cámara queden debajo.</string>
     <string name="desc_hora">Selecciona la hora de encendido y apagado.</string>
+    <string name="hora_encendido">Hora de encendido.</string>
+    <string name="hora_apagado">Hoara de apgado.</string>
 
 </resources>

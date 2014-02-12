@@ -29,7 +29,10 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.FieldPosition;
 import java.text.Format;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -44,7 +47,6 @@ public class MainActivity extends Activity {
     private ProgressBar pbarProgreso;
     public boolean valor=true;
     public boolean apagar_encenter=true;
-
     public int contador=1;
     private SharedPreferences prefs;
     //WebView webView;
@@ -56,6 +58,8 @@ public class MainActivity extends Activity {
     private int defTimeOut;
     private static final int DELAY = 1;
     private static final int DELAYORIG = 1800000;
+    String hora_apagado;
+    String hora_encendido;
 
 
     @Override
@@ -91,13 +95,9 @@ public class MainActivity extends Activity {
 
         WebView webView = (WebView)this.findViewById(R.id.webView);
         Button button = (Button)this.findViewById(R.id.BConfig);
-
-
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
-        //setContentView(webView);
         webView.clearCache(true);
-
         tarea1=new MiTareaAsincrona();
         tarea1.execute();
 
@@ -283,10 +283,11 @@ public class MainActivity extends Activity {
             Format date = new SimpleDateFormat("kk:mm:ss");
             String date2=date.format(new Date());
 
-            Log.d("HORA", date2.toString());
+            //Log.d("HORA", date2.toString());
             //si son las las 12, se bloquea la pantalla
             //si son las 8 se enciende
-            Thread.sleep(20000);
+            Thread.sleep(60000);
+
 
         }
         catch(InterruptedException e) {}
@@ -311,33 +312,57 @@ public class MainActivity extends Activity {
             if(result)
                 Toast.makeText(MainActivity.this, "Tarea finalizada!", Toast.LENGTH_SHORT).show();
             //TODO: Revisar por que al desconectar el cable de depuración no funcionan este metodo. Solo en el s7 Single
-            if(contador==0)
-            {
-                wl.release();
-                defTimeOut = Settings.System.getInt(getContentResolver(),Settings.System.SCREEN_OFF_TIMEOUT, DELAY);
-                Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, DELAY);
-                contador=1;
-                Log.d("DEBUG","SE BLOQUEA");
-                Log.d("DEBUG", String.valueOf(defTimeOut));
-            }
-            else
-            {
-                contador=0;
-                //desbloquea y mantiene encendida la pantalla
-                kl.disableKeyguard();
+            ObtenerHora();
+            ComprobarAccion();
 
-
-                wl.acquire();
-                Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, DELAYORIG);
-                //Read more: http://www.androidhub4you.com/2013/07/how-to-unlock-android-phone.html#ixzz2jxZE9Yk0
-                Log.d("DEBUG","SE DESBLOQUEA");
-            }
             tarea2=new MiTareaAsincrona();
             tarea2.execute();
+
         }
         @Override
         protected void onCancelled() {
             Toast.makeText(MainActivity.this, "Tarea cancelada!", Toast.LENGTH_SHORT).show();
         }
+
+        private void ObtenerHora()
+        {
+            hora_encendido=prefs.getString("hora_encendido","00:00");
+            hora_apagado=prefs.getString("hora_apagado","00:00");
+
+
+        }
+        private void ComprobarAccion()
+        {
+            Format date = new SimpleDateFormat("kk:mm");
+            String date2=date.format(new Date());
+            Log.d("HORA", date2.toString());
+            Log.d("Hora Encendido",hora_encendido);
+            Log.d("Hora apagado",hora_apagado);
+
+
+
+        }
+
+        private void ApagarPantalla()
+        {
+            wl.release();
+            defTimeOut = Settings.System.getInt(getContentResolver(),Settings.System.SCREEN_OFF_TIMEOUT, DELAY);
+            Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, DELAY);
+            contador=1;
+            Log.d("DEBUG","SE BLOQUEA");
+            Log.d("DEBUG", String.valueOf(defTimeOut));
+        }
+
+        private void EncenderPantalla()
+        {
+            //desbloquea y mantiene encendida la pantalla
+            kl.disableKeyguard();
+            wl.acquire();
+            Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, DELAYORIG);
+            //Read more: http://www.androidhub4you.com/2013/07/how-to-unlock-android-phone.html#ixzz2jxZE9Yk0
+            Log.d("DEBUG","SE DESBLOQUEA");
+
+        }
+
     }
 }

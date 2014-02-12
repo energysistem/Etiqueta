@@ -12,37 +12,48 @@
         android:padding="10dip"
         android:weightSum="1">
 
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="@string/desc_hora"
-            android:id="@+id/textView3"
-            android:layout_gravity="center_horizontal"
+            android:id="@+id/textView2"
             android:layout_marginBottom="50px" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/hora_encendido"
+            android:id="@+id/textView3" />
 
         <TimePicker
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/timePicker"
+            android:id="@+id/timePickerEncendido"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="100px" />
+            android:layout_marginTop="20px" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/hora_apagado"
+            android:id="@+id/textView" />
 
         <TimePicker
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/timePicker2"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="50px" />
+            android:id="@+id/timePickerApagado"
+            android:layout_gravity="center_horizontal"/>
 
         <Button
             android:layout_width="145dp"
             android:layout_height="wrap_content"
             android:text="@string/confirmar"
-            android:id="@+id/button"
-            android:layout_gravity="center_horizontal"
-            android:layout_weight="0.06" />
+            android:id="@+id/buttonConfirmarHora"
+            android:layout_weight="0.06"
+            android:layout_gravity="center_horizontal" />
 
     </LinearLayout>
 

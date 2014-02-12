@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TabHost;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import es.energy.myapplication.R;
@@ -45,6 +47,9 @@ public class Config extends Activity {
         Button botonBuscar= (Button)findViewById(R.id.buttonBuscar);
         final Button botonConfirmarProduct=(Button)findViewById(R.id.buttonConfirmarProduct);
         final Button botonConfirmarPosicion=(Button)findViewById(R.id.buttonConfirmarPosicion);
+        final Button botonConfirmarHora=(Button)findViewById(R.id.buttonConfirmarHora);
+        final TimePicker timePickerEncender=(TimePicker)findViewById(R.id.timePickerEncendido);
+        final TimePicker timePickerApagado=(TimePicker)findViewById(R.id.timePickerApagado);
         final RadioButton radioButtonDerecha=(RadioButton)findViewById(R.id.radioButtonDerecha);
         final RadioButton radioButtonIzquierda=(RadioButton)findViewById(R.id.radioButtonIzquierda);
         final WebView webViewPre=(WebView) findViewById(R.id.webViewPre);
@@ -94,7 +99,6 @@ public class Config extends Activity {
                     text3.setVisibility(View.GONE);
                     check_multiple=false;
                 }
-
             }
         });
         botonBuscar.setOnClickListener(new View.OnClickListener(){
@@ -129,7 +133,6 @@ public class Config extends Activity {
                 SharedPreferences.Editor editor= prefs.edit();
                 editor.putString("url", webViewPre.getUrl());
                 editor.commit();
-
             }
         });
         botonConfirmarPosicion.setOnClickListener(new View.OnClickListener() {
@@ -140,7 +143,34 @@ public class Config extends Activity {
                 GuardarValor("Conf_Posicion");
             }
         });
+        botonConfirmarHora.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                GuardarValor("Conf_Hora");
+                //Log.d("DEBUG",(timePickerEncender.getCurrentHour())+":"+timePickerEncender.getCurrentMinute());
+                //Log.d("DEBUG",(timePickerApagado.getCurrentHour())+":"+timePickerApagado.getCurrentMinute());
+                //inserto el valor de la hora en settings
+                SharedPreferences.Editor editor= prefs.edit();
+                editor.putString("hora_encendido",(timePickerEncender.getCurrentHour().toString())+":"+(timePickerEncender.getCurrentMinute().toString()));
+                editor.putString("hora_apagado",(timePickerApagado.getCurrentHour().toString())+":"+(timePickerApagado.getCurrentMinute().toString()));
+                editor.commit();
+                ComprobarValidacionTabs();
 
+            }
+        });
+    }
+    private void ComprobarValidacionTabs()
+    {
+         //si los valores ya estan
+        if(prefs.getBoolean("Conf_Hora",false)==true && prefs.getBoolean("Conf_Posicion",false)==true && prefs.getBoolean("Conf_Producto",false)==true)
+        {
+            Intent mainIntent = new Intent().setClass(Config.this, MainActivity.class);
+            startActivity(mainIntent);
+            SharedPreferences.Editor editor= prefs.edit();
+            editor.putBoolean("primera_vez", false);
+            editor.commit();
+        }
     }
     private void EstablecerOrientacion(RadioButton radioButtonDerecha, RadioButton radioButtonIzquierda )
     {
@@ -156,17 +186,14 @@ public class Config extends Activity {
 
     private void CargarProduct(WebView webViewPre, EditText text1, EditText text2, EditText text3 )
     {
-
         if(check_multiple==false)
         {
             webViewPre.loadUrl("http://www.energysistem.com/tools/tiendas/etiquetas/product-whitebuttons.html?code="+text1.getText());
-
         }
         else
         {
             //url completa http://energysistem.com/tools/tiendas/etiquetas/selector.html?number=3&code1=39177&code2=39177&code3=39177&02-12-2013_17:36
             webViewPre.loadUrl("http://energysistem.com/tools/tiendas/etiquetas/selector.html?number=3&code1="+text1.getText()+"&code2="+text2.getText()+"&code3="+text3.getText());
-
         }
         //Debug:
         //Toast.makeText(Config.this,text1.getText(), Toast.LENGTH_SHORT).show();
