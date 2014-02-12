@@ -59,6 +59,16 @@ public class Config extends Activity {
         //Inicializo las preferencias
         prefs= getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
         this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        //establecer orientación
+        if(prefs.getString("orientation","SCREEN_ORIENTATION_PORTRAIT")== "SCREEN_ORIENTATION_PORTRAIT")
+        {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
+        else
+        {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
+
+        }
 
 
         tabHost=(TabHost)findViewById(R.id.tabHost);
