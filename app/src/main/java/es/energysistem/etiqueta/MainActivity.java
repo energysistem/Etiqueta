@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -85,11 +86,21 @@ public class MainActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
-        //
-        setContentView(R.layout.activity_main);
 
+        setContentView(R.layout.activity_main);
         //Inicializo las preferencias
         prefs= getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
+
+        //establecer orientación
+        if(prefs.getString("orientation","SCREEN_ORIENTATION_PORTRAIT")== "SCREEN_ORIENTATION_PORTRAIT")
+        {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
+        else
+        {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
+
+        }
 
         //webView = new WebView(this);
 

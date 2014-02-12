@@ -177,10 +177,16 @@ public class Config extends Activity {
         if(radioButtonDerecha.isChecked())
         {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            SharedPreferences.Editor editor= prefs.edit();
+            editor.putString("orientation","SCREEN_ORIENTATION_PORTRAIT");
+            editor.commit();
         }
         else
         {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
+            SharedPreferences.Editor editor= prefs.edit();
+            editor.putString("orientation","SCREEN_ORIENTATION_REVERSE_PORTRAIT");
+            editor.commit();
         }
     }
 
