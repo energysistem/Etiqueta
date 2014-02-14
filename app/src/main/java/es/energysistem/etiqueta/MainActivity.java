@@ -96,7 +96,7 @@ public class MainActivity extends Activity {
         {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
-        else
+        else if(prefs.getString("orientation","SCREEN_ORIENTATION_REVERSE_PORTRAIT")== "SCREEN_ORIENTATION_REVERSE_PORTRAIT")
         {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
 
@@ -138,6 +138,13 @@ public class MainActivity extends Activity {
         KillStatusBar();
         //Crea icono en el escritorio
         CrearIconoLauncher();
+
+        /*//desbloquea y mantiene encendida la pantalla
+        kl.disableKeyguard();
+        wl.acquire();
+        Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, DELAYORIG);*/
+
+
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -146,10 +153,10 @@ public class MainActivity extends Activity {
         });
 
 
+
     }
     private void VentanaEmergente()
     {
-
 
         // get prompts.xml view
         LayoutInflater li = LayoutInflater.from(context);
@@ -348,30 +355,39 @@ public class MainActivity extends Activity {
             String date2=date.format(new Date());
             Log.d("HORA", date2.toString());
             Log.d("Hora Encendido",hora_encendido);
-            Log.d("Hora apagado",hora_apagado);
-
-
-
+            Log.d("Hora Apagado",hora_apagado);
+            if(hora_encendido.compareTo(date2.toString())==0)
+            {
+                EncenderPantalla();
+            }
+            else if(hora_apagado.compareTo(date2.toString())==0)
+            {
+                ApagarPantalla();
+            }
         }
 
         private void ApagarPantalla()
         {
-            wl.release();
+            if(wl.isHeld())
+            {
+                wl.release();
+            }
+            //wl.release();
             defTimeOut = Settings.System.getInt(getContentResolver(),Settings.System.SCREEN_OFF_TIMEOUT, DELAY);
             Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, DELAY);
             contador=1;
-            Log.d("DEBUG","SE BLOQUEA");
-            Log.d("DEBUG", String.valueOf(defTimeOut));
+            Log.d("Hora","SE BLOQUEA");
+
         }
 
-        private void EncenderPantalla()
+        public void EncenderPantalla()
         {
             //desbloquea y mantiene encendida la pantalla
             kl.disableKeyguard();
             wl.acquire();
             Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, DELAYORIG);
-            //Read more: http://www.androidhub4you.com/2013/07/how-to-unlock-android-phone.html#ixzz2jxZE9Yk0
-            Log.d("DEBUG","SE DESBLOQUEA");
+            //Read more: http://www.androidhub4you.com/2013/07/how-to-unlock-android-phone.html#ixzz2jxZE9Yk0*/
+            Log.d("Hora","SE DESBLOQUEA");
 
         }
 

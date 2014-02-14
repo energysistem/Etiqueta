@@ -24,6 +24,10 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import es.energy.myapplication.R;
 
 /**
@@ -59,16 +63,21 @@ public class Config extends Activity {
         //Inicializo las preferencias
         prefs= getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
         this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        timePickerApagado.setIs24HourView(true);
+        timePickerEncender.setIs24HourView(true);
+
         //establecer orientación
         if(prefs.getString("orientation","SCREEN_ORIENTATION_PORTRAIT")== "SCREEN_ORIENTATION_PORTRAIT")
         {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
-        else
+        else if(prefs.getString("orientation","SCREEN_ORIENTATION_REVERSE_PORTRAIT")== "SCREEN_ORIENTATION_REVERSE_PORTRAIT")
         {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
 
         }
+
 
 
         tabHost=(TabHost)findViewById(R.id.tabHost);
