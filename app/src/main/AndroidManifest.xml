@@ -23,7 +23,7 @@
         android:label="@string/app_name"
         android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         <activity
-            android:name="es.energysistem.etiqueta.SplashScreenActivity"
+            android:name="es.energysistem.etiqueta.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
             <intent-filter>
