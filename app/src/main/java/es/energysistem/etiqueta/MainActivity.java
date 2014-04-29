@@ -1,6 +1,7 @@
 package es.energysistem.etiqueta;
 
-
+import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.KeyguardManager;
 import android.app.ProgressDialog;
@@ -9,46 +10,38 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.app.Activity;
 import android.os.PowerManager;
-import android.provider.Settings;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.FieldPosition;
-import java.text.Format;
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import es.energy.myapplication.R;
+import es.energysistem.etiqueta.services.StartStopService;
 
 public class MainActivity extends Activity {
 
     final Context context = this;
-    private MiTareaAsincrona tarea1;
-    private MiTareaAsincrona tarea2;
     private ProgressDialog pDialog;
     private ProgressBar pbarProgreso;
-    public boolean valor=true;
-    public boolean apagar_encenter=true;
-    public int contador=1;
+    public boolean valor = true;
+    public boolean apagar_encenter = true;
+    public int contador = 1;
     private SharedPreferences prefs;
     //WebView webView;
     String Url;
@@ -71,53 +64,48 @@ public class MainActivity extends Activity {
             Thread.sleep(9000);
 
         } catch (InterruptedException e) {
-
             e.printStackTrace();
         }*/
 
         //
         pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         km = (KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE);
-        kl = km .newKeyguardLock("MyKeyguardLock");
+        kl = km.newKeyguardLock("MyKeyguardLock");
         wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "MyWakeLock");
 
         //Pantalla completa y mantiene la pantalla encendida
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
 
         setContentView(R.layout.activity_main);
         //Inicializo las preferencias
-        prefs= getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
+        prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
 
         //establecer orientación
-        if(prefs.getString("orientation","SCREEN_ORIENTATION_PORTRAIT")== "SCREEN_ORIENTATION_PORTRAIT")
-        {
+        if (prefs.getString("orientation", "SCREEN_ORIENTATION_PORTRAIT") == "SCREEN_ORIENTATION_PORTRAIT") {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        }
-        else if(prefs.getString("orientation","SCREEN_ORIENTATION_REVERSE_PORTRAIT")== "SCREEN_ORIENTATION_REVERSE_PORTRAIT")
-        {
+        } else if (prefs.getString("orientation", "SCREEN_ORIENTATION_REVERSE_PORTRAIT") == "SCREEN_ORIENTATION_REVERSE_PORTRAIT") {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
-
         }
 
         //webView = new WebView(this);
 
-        WebView webView = (WebView)this.findViewById(R.id.webView);
-        Button button = (Button)this.findViewById(R.id.BConfig);
+        WebView webView = (WebView) this.findViewById(R.id.webView);
+        Button button = (Button) this.findViewById(R.id.BConfig);
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webView.clearCache(true);
-        tarea1=new MiTareaAsincrona();
-        tarea1.execute();
+//        tarea1 = new MiTareaAsincrona();
+//        tarea1.execute();
 
         GenerarUrl();
         webView.loadUrl(Url);
 
         webView.setWebChromeClient(new WebChromeClient());
 
-        webView.setWebViewClient(new WebViewClient(){
+        webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
@@ -125,8 +113,8 @@ public class MainActivity extends Activity {
                 view.getUrl();
                 //Now set to TExtView
 
-                Log.i("Ha cambiado la url",url);
-                Url=url;
+                Log.i("Ha cambiado la url", url);
+                Url = url;
                 GenerarUrl();
 
             }
@@ -152,11 +140,25 @@ public class MainActivity extends Activity {
             }
         });
 
+        if(!isMyServiceRunning()) {
+            Intent myIntent = new Intent(context, StartStopService.class);
+            startService(myIntent);
+        }
 
-
+        kl.disableKeyguard();
     }
-    private void VentanaEmergente()
-    {
+
+    private boolean isMyServiceRunning() {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (StartStopService.class.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void VentanaEmergente() {
 
         // get prompts.xml view
         LayoutInflater li = LayoutInflater.from(context);
@@ -180,27 +182,26 @@ public class MainActivity extends Activity {
                                 //result.setText(userInput.getText());
                                 Toast.makeText(MainActivity.this, userInput.getText().toString(), Toast.LENGTH_SHORT).show();
 
-                                if (userInput.getText().toString().compareTo("5603")==0)
-                                {
-                                   //abre el panel de configuración
+                                if (userInput.getText().toString().compareTo("5603") == 0) {
+                                    //abre el panel de configuración
                                     //error en la contraseña
                                     //Toast.makeText(MainActivity.this, "CONTRASEÑA CORRECTA!", Toast.LENGTH_SHORT).show();
                                     Intent mainIntent = new Intent().setClass(MainActivity.this, Config.class);
                                     startActivity(mainIntent);
-                                }
-                                else
-                                {
+                                } else {
                                     //error en la contraseña
                                     Toast.makeText(MainActivity.this, findViewById(R.string.error_pass).toString(), Toast.LENGTH_SHORT).show();
                                 }
                             }
-                        })
+                        }
+                )
                 .setNegativeButton("Cancel",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
                             }
-                        });
+                        }
+                );
 
         // create alert dialog
         AlertDialog alertDialog = alertDialogBuilder.create();
@@ -210,40 +211,55 @@ public class MainActivity extends Activity {
 
     }
 
-    private void GenerarUrl()
-    {
-        SharedPreferences.Editor editor= prefs.edit();
-        boolean Url_existe=prefs.getBoolean(("existe_url"),false);
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_CAMERA) {
+            event.startTracking(); // Needed to track long presses
+            return true;
+        } else if (keyCode == KeyEvent.KEYCODE_BACK) {
+            //event.startTracking(); // Needed to track long presses
+            return true;
+        }
+        Log.d("DEBUG", KeyEvent.keyCodeToString(keyCode));
+        return super.onKeyDown(keyCode, event);
+    }
 
-        if (Url_existe==false)
-        {
+    @Override
+    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_CAMERA) {
+            VentanaEmergente();
+            return true;
+        }
+        return super.onKeyLongPress(keyCode, event);
+    }
+
+    private void GenerarUrl() {
+        SharedPreferences.Editor editor = prefs.edit();
+        boolean Url_existe = prefs.getBoolean(("existe_url"), false);
+
+        if (Url_existe == false) {
             //inserto en las pref que la nueva url
-            editor.putBoolean("existe_url",true);
-            Url="http://www.energysistem.com/tools/tiendas/etiquetas/index.html";
-            editor.putString("url",Url);
+            editor.putBoolean("existe_url", true);
+            Url = "http://www.energysistem.com/tools/tiendas/etiquetas/index.html";
+            editor.putString("url", Url);
             editor.commit();
 
-        }
-        else
-        {
-            if (Url==null)
-                Url=prefs.getString(("url"),"http://www.energysistem.com/tools/tiendas/etiquetas/index.html");
-            else
-            {
-                editor.putString("url",Url);
+        } else {
+            if (Url == null)
+                Url = prefs.getString(("url"), "http://www.energysistem.com/tools/tiendas/etiquetas/index.html");
+            else {
+                editor.putString("url", Url);
                 editor.commit();
             }
 
         }
     }
 
-    private void CrearIconoLauncher()
-    {
-        SharedPreferences.Editor editor= prefs.edit();
+    private void CrearIconoLauncher() {
+        SharedPreferences.Editor editor = prefs.edit();
 
-        boolean valor_icono=prefs.getBoolean("icono_launcher",false);
-        if(valor_icono==false)
-        {
+        boolean valor_icono = prefs.getBoolean("icono_launcher", false);
+        if (valor_icono == false) {
             //where this is a context (e.g. your current activity)
             final Intent shortcutIntent = new Intent(this, MainActivity.class);
 
@@ -258,34 +274,35 @@ public class MainActivity extends Activity {
             sendBroadcast(intent);
 
             //inserto en las pref que ya hay un icono en el escritorio
-            editor.putBoolean("icono_launcher",true);
+            editor.putBoolean("icono_launcher", true);
             editor.commit();
         }
-
     }
-    private void KillStatusBar()
-    {
+
+    private void KillStatusBar() {
         Process proc = null;
 
         String ProcID = "79"; //HONEYCOMB AND OLDER
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             ProcID = "42"; //ICS AND NEWER
         }
 
         try {
             proc = Runtime.getRuntime().exec(new String[]{"su", "-c", "service call activity " + ProcID + " s16 com.android.systemui"});
         } catch (IOException e) {
-            Log.d("TAG","Failed to kill task bar (1).");
+            Log.d("TAG", "Failed to kill task bar (1).");
             e.printStackTrace();
         }
+
         try {
             proc.waitFor();
         } catch (InterruptedException e) {
-            Log.d("TAG","Failed to kill task bar (2).");
+            Log.d("TAG", "Failed to kill task bar (2).");
             e.printStackTrace();
         }
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -293,103 +310,9 @@ public class MainActivity extends Activity {
         return true;
     }
 
-    private void tareaLarga()
-    {
-        try
-        {
-            //compruebo la hora
-            Format date = new SimpleDateFormat("kk:mm:ss");
-            String date2=date.format(new Date());
-
-            //Log.d("HORA", date2.toString());
-            //si son las las 12, se bloquea la pantalla
-            //si son las 8 se enciende
-            Thread.sleep(60000);
-
-
-        }
-        catch(InterruptedException e) {}
-    }
     @Override
-    protected void onPause()
-    {
+    protected void onPause() {
         super.onPause();
-
-        Log.d("DEBUG","On Pause");
-    }
-
-    private class MiTareaAsincrona extends AsyncTask<Void, Integer, Boolean> {
-        @Override
-        protected Boolean doInBackground(Void... params) {
-
-         tareaLarga();
-         return true;
-        }
-        @Override
-        protected void onPostExecute(Boolean result) {
-            if(result)
-                Toast.makeText(MainActivity.this, "Tarea finalizada!", Toast.LENGTH_SHORT).show();
-            //TODO: Revisar por que al desconectar el cable de depuración no funcionan este metodo. Solo en el s7 Single
-            ObtenerHora();
-            ComprobarAccion();
-
-            tarea2=new MiTareaAsincrona();
-            tarea2.execute();
-
-        }
-        @Override
-        protected void onCancelled() {
-            Toast.makeText(MainActivity.this, "Tarea cancelada!", Toast.LENGTH_SHORT).show();
-        }
-
-        private void ObtenerHora()
-        {
-            hora_encendido=prefs.getString("hora_encendido","00:00");
-            hora_apagado=prefs.getString("hora_apagado","00:00");
-
-
-        }
-        private void ComprobarAccion()
-        {
-            Format date = new SimpleDateFormat("kk:mm");
-            String date2=date.format(new Date());
-            Log.d("HORA", date2.toString());
-            Log.d("Hora Encendido",hora_encendido);
-            Log.d("Hora Apagado",hora_apagado);
-            if(hora_encendido.compareTo(date2.toString())==0)
-            {
-                EncenderPantalla();
-            }
-            else if(hora_apagado.compareTo(date2.toString())==0)
-            {
-                ApagarPantalla();
-            }
-        }
-
-        private void ApagarPantalla()
-        {
-            if(wl.isHeld())
-            {
-                wl.release();
-            }
-            //wl.release();
-            defTimeOut = Settings.System.getInt(getContentResolver(),Settings.System.SCREEN_OFF_TIMEOUT, DELAY);
-            Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, DELAY);
-            contador=1;
-            Log.d("Hora","SE BLOQUEA");
-
-        }
-
-        public void EncenderPantalla()
-        {
-            //desbloquea y mantiene encendida la pantalla
-            kl.disableKeyguard();
-            wl.acquire();
-            Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, DELAYORIG);
-            //Read more: http://www.androidhub4you.com/2013/07/how-to-unlock-android-phone.html#ixzz2jxZE9Yk0*/
-            Log.d("Hora","SE DESBLOQUEA");
-
-        }
-
+        Log.d("DEBUG", "On Pause");
     }
 }

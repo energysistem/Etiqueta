@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -25,7 +26,9 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import java.text.Format;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import es.energy.myapplication.R;
@@ -37,6 +40,8 @@ public class Config extends Activity {
     private SharedPreferences prefs;
     private TabHost tabHost;
     private Boolean check_multiple=false;
+    private TimePicker timePickerEncender;
+    private TimePicker timePickerApagado;
 
 
     @Override
@@ -52,8 +57,8 @@ public class Config extends Activity {
         final Button botonConfirmarProduct=(Button)findViewById(R.id.buttonConfirmarProduct);
         final Button botonConfirmarPosicion=(Button)findViewById(R.id.buttonConfirmarPosicion);
         final Button botonConfirmarHora=(Button)findViewById(R.id.buttonConfirmarHora);
-        final TimePicker timePickerEncender=(TimePicker)findViewById(R.id.timePickerEncendido);
-        final TimePicker timePickerApagado=(TimePicker)findViewById(R.id.timePickerApagado);
+        timePickerEncender=(TimePicker)findViewById(R.id.timePickerEncendido);
+        timePickerApagado=(TimePicker)findViewById(R.id.timePickerApagado);
         final RadioButton radioButtonDerecha=(RadioButton)findViewById(R.id.radioButtonDerecha);
         final RadioButton radioButtonIzquierda=(RadioButton)findViewById(R.id.radioButtonIzquierda);
         final WebView webViewPre=(WebView) findViewById(R.id.webViewPre);
@@ -77,8 +82,6 @@ public class Config extends Activity {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
 
         }
-
-
 
         tabHost=(TabHost)findViewById(R.id.tabHost);
         tabHost.setup();
@@ -171,14 +174,51 @@ public class Config extends Activity {
                 //Log.d("DEBUG",(timePickerApagado.getCurrentHour())+":"+timePickerApagado.getCurrentMinute());
                 //inserto el valor de la hora en settings
                 SharedPreferences.Editor editor= prefs.edit();
-                editor.putString("hora_encendido",(timePickerEncender.getCurrentHour().toString())+":"+(timePickerEncender.getCurrentMinute().toString()));
-                editor.putString("hora_apagado",(timePickerApagado.getCurrentHour().toString())+":"+(timePickerApagado.getCurrentMinute().toString()));
+
+                SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Calendar.HOUR_OF_DAY, timePickerEncender.getCurrentHour());
+                calendar.set(Calendar.MINUTE, timePickerEncender.getCurrentMinute());
+
+                editor.putString("hora_encendido",(format.format(calendar.getTime())));
+
+                calendar.set(Calendar.HOUR_OF_DAY, timePickerApagado.getCurrentHour());
+                calendar.set(Calendar.MINUTE, timePickerApagado.getCurrentMinute());
+                editor.putString("hora_apagado",(format.format(calendar.getTime())));
                 editor.commit();
                 ComprobarValidacionTabs();
 
             }
         });
+
+        setTimePickers();
     }
+
+    private void setTimePickers() {
+        String hora_encendido = prefs.getString("hora_encendido", "00:00");
+        String hora_apagado = prefs.getString("hora_apagado", "00:00");
+
+        SimpleDateFormat  format = new SimpleDateFormat("HH:mm");
+        Date dateOn = null;
+        Date dateOff = null;
+        try {
+            dateOn = format.parse(hora_encendido);
+            dateOff = format.parse(hora_apagado);
+        } catch (ParseException e) {
+            Log.d("Error", "invalid date");
+        }
+
+        Calendar c = Calendar.getInstance();
+        c.setTime(dateOn);
+        timePickerEncender.setCurrentHour(c.get(Calendar.HOUR_OF_DAY));
+        timePickerEncender.setCurrentMinute(c.get(Calendar.MINUTE));
+
+        c.setTime(dateOff);
+        timePickerApagado.setCurrentHour(c.get(Calendar.HOUR_OF_DAY));
+        timePickerApagado.setCurrentMinute(c.get(Calendar.MINUTE));
+    }
+
     private void ComprobarValidacionTabs()
     {
          //si los valores ya estan
@@ -191,6 +231,7 @@ public class Config extends Activity {
             editor.commit();
         }
     }
+
     private void EstablecerOrientacion(RadioButton radioButtonDerecha, RadioButton radioButtonIzquierda )
     {
         if(radioButtonDerecha.isChecked())
@@ -229,8 +270,6 @@ public class Config extends Activity {
         SharedPreferences.Editor editor= prefs.edit();
         editor.putBoolean(pestaña, true);
         editor.commit();
-
-
     }
 
 }

@@ -5,8 +5,6 @@
     android:id="@+id/rl"
     tools:context=".MainActivity" >
 
-
-
     <WebView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -16,7 +14,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/config"
-        android:id="@+id/BConfig" />
-
+        android:id="@+id/BConfig"
+        android:visibility="visible"
+        android:alpha="0" />
 
 </RelativeLayout>

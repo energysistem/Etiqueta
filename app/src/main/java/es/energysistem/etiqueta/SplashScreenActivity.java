@@ -20,8 +20,8 @@ public class SplashScreenActivity extends Activity {
 
     // Set the duration of the splash screen
     private static final long SPLASH_SCREEN_DELAY = 6000;
-    SharedPreferences prefs;
-    boolean primera_vez;
+    private SharedPreferences prefs;
+    private boolean primera_vez;
 
 
     @Override
@@ -43,30 +43,24 @@ public class SplashScreenActivity extends Activity {
         setContentView(R.layout.splash_screen);
 
         //Comprueba si es la primera vez que se abre la apliación
-        prefs= getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
+        prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
         primera_vez = prefs.getBoolean("primera_vez", true);
-
-
 
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
 
-
                 // Start the next activity
-                //si es la primera vez, habro el panel de configuración
-                if(primera_vez==true)
-                {
-                    Intent mainIntent = new Intent().setClass(SplashScreenActivity.this, Config.class);
+                // si es la primera vez, habro el panel de configuración
+                //TODO: estaria bien comprobar que exixten las preferencias necesarias
+                Intent mainIntent = null;
+                if (primera_vez) {
+                    mainIntent = new Intent().setClass(SplashScreenActivity.this, Config.class);
                     startActivity(mainIntent);
-                }//si no es la primera vez abro directamente la etiqueta.
-                else
-                {
-                    Intent mainIntent = new Intent().setClass(SplashScreenActivity.this, MainActivity.class);
-                    startActivity(mainIntent);
+                } else { //si no es la primera vez abro directamente la etiqueta.
+                    mainIntent = new Intent().setClass(SplashScreenActivity.this, MainActivity.class);
                 }
-
-
+                startActivity(mainIntent);
 
                 // Close the activity so the user won't able to go back this
                 // activity pressing Back button
@@ -78,6 +72,5 @@ public class SplashScreenActivity extends Activity {
         Timer timer = new Timer();
         timer.schedule(task, SPLASH_SCREEN_DELAY);
     }
-
 
 }
