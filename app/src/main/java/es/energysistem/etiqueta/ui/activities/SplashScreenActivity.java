@@ -18,7 +18,6 @@ public class SplashScreenActivity extends BaseActivity {
 
     // Set the duration of the splash screen
     private static final long SPLASH_SCREEN_DELAY = 6000;
-    private SharedPreferences prefs;
     private boolean primera_vez;
 
 
@@ -32,16 +31,14 @@ public class SplashScreenActivity extends BaseActivity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        // Set portrait orientation
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
         // Hide title bar
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         setContentView(R.layout.activity_splash_screen);
 
         //Comprueba si es la primera vez que se abre la apliación
-        prefs = getSharedPreferences("MisPreferencias", MODE_PRIVATE);
-        primera_vez = prefs.getBoolean("primera_vez", true);
+        primera_vez = preferencesManager.isAppFirstTime();
 
         TimerTask task = new TimerTask() {
             @Override

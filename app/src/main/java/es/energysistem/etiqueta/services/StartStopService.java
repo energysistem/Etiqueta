@@ -33,10 +33,6 @@ public class StartStopService extends Service {
     private DevicePolicyManager deviceManager;
     private ComponentName componentName;
 
-    public StartStopService() {
-
-    }
-
     @Override
     public void onCreate(){
         // Create a timer to check the screen on/off time.
@@ -95,7 +91,6 @@ public class StartStopService extends Service {
     };
 
     private void LockScreen() {
-        // Lock screen
         keyguardLock.reenableKeyguard();
         releaseWakeLock();
         wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");
@@ -106,8 +101,7 @@ public class StartStopService extends Service {
         Log.d("Screen", "LOCK");
     }
 
-    public void UnlockScreen() {
-        // Unlock screen
+    private void UnlockScreen() {
         keyguardLock.disableKeyguard();
         releaseWakeLock();
         wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "MyWakeLock");

@@ -1,13 +1,11 @@
 package es.energysistem.etiqueta.ui.activities;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.util.Log;
 
+import es.energysistem.etiqueta.PreferencesManager;
 import es.energysistem.etiqueta.DeviceAdmin;
 
 /**
@@ -15,17 +13,14 @@ import es.energysistem.etiqueta.DeviceAdmin;
  */
 public class BaseActivity extends Activity {
 
-    private static final String PREFERENCES_ID = "MisPreferencias";
-    private static final String SCREEN_ORIENTATION_PORTRAIT = "SCREEN_ORIENTATION_PORTRAIT";
-    private static final String SCREEN_ORIENTATION_REVERSE_PORTRAIT = "SCREEN_ORIENTATION_REVERSE_PORTRAIT";
-    protected SharedPreferences preferences;
-    private DeviceAdmin deviceAdmin;
+    protected DeviceAdmin deviceAdmin;
+    protected PreferencesManager preferencesManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        preferences = getSharedPreferences(PREFERENCES_ID, Context.MODE_PRIVATE);
         deviceAdmin = new DeviceAdmin(this);
+        preferencesManager = new PreferencesManager(this);
     }
 
     @Override
@@ -36,9 +31,10 @@ public class BaseActivity extends Activity {
     }
 
     protected void checkOrientation() {
-        if (preferences.getString("orientation", SCREEN_ORIENTATION_PORTRAIT).equals(SCREEN_ORIENTATION_PORTRAIT) && getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+        int orientation = preferencesManager.getOrientation();
+        if (orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT && getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        } else if (preferences.getString("orientation", SCREEN_ORIENTATION_REVERSE_PORTRAIT).equals(SCREEN_ORIENTATION_REVERSE_PORTRAIT) && getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT) {
+        } else if (orientation == ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT && getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
         }
     }

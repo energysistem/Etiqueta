@@ -30,11 +30,12 @@ import es.energysistem.etiqueta.DeviceAdmin;
  * Created by Adrián. on 20/11/13.
  */
 public class ConfigActivity extends BaseActivity{
-    private SharedPreferences prefs;
     private TabHost tabHost;
     private Boolean check_multiple=false;
     private TimePicker timePickerEncender;
     private TimePicker timePickerApagado;
+    private RadioButton radioButtonDerecha;
+    private RadioButton radioButtonIzquierda;
 
 
     @Override
@@ -52,14 +53,13 @@ public class ConfigActivity extends BaseActivity{
         final Button botonConfirmarHora=(Button)findViewById(R.id.buttonConfirmarHora);
         timePickerEncender=(TimePicker)findViewById(R.id.timePickerEncendido);
         timePickerApagado=(TimePicker)findViewById(R.id.timePickerApagado);
-        final RadioButton radioButtonDerecha=(RadioButton)findViewById(R.id.radioButtonDerecha);
-        final RadioButton radioButtonIzquierda=(RadioButton)findViewById(R.id.radioButtonIzquierda);
+        radioButtonDerecha=(RadioButton)findViewById(R.id.radioButtonDerecha);
+        radioButtonIzquierda=(RadioButton)findViewById(R.id.radioButtonIzquierda);
         final WebView webViewPre=(WebView) findViewById(R.id.webViewPre);
         WebSettings webSettings = webViewPre.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webViewPre.setInitialScale(50);
         //Inicializo las preferencias
-        prefs= getSharedPreferences("MisPreferencias", MODE_PRIVATE);
         this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         timePickerApagado.setIs24HourView(true);
@@ -132,11 +132,9 @@ public class ConfigActivity extends BaseActivity{
         botonConfirmarProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GuardarValor("Conf_Producto");
+                preferencesManager.setProductConfigured(true);
                 //inserto en las pref que la pestaña ha sido completada
-                SharedPreferences.Editor editor= prefs.edit();
-                editor.putString("url", webViewPre.getUrl());
-                editor.commit();
+                preferencesManager.setUrl(webViewPre.getUrl());
             }
         });
         botonConfirmarPosicion.setOnClickListener(new View.OnClickListener() {
@@ -144,18 +142,17 @@ public class ConfigActivity extends BaseActivity{
             public void onClick(View v)
             {
                 EstablecerOrientacion(radioButtonDerecha,radioButtonIzquierda);
-                GuardarValor("Conf_Posicion");
+                preferencesManager.setPositionConfigured(true);
             }
         });
         botonConfirmarHora.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
             {
-                GuardarValor("Conf_Hora");
+                preferencesManager.setTimeConfigured(true);
                 //Log.d("DEBUG",(timePickerEncender.getCurrentHour())+":"+timePickerEncender.getCurrentMinute());
                 //Log.d("DEBUG",(timePickerApagado.getCurrentHour())+":"+timePickerApagado.getCurrentMinute());
                 //inserto el valor de la hora en settings
-                SharedPreferences.Editor editor= prefs.edit();
 
                 SimpleDateFormat format = new SimpleDateFormat("HH:mm");
 
@@ -163,26 +160,26 @@ public class ConfigActivity extends BaseActivity{
                 calendar.set(Calendar.HOUR_OF_DAY, timePickerEncender.getCurrentHour());
                 calendar.set(Calendar.MINUTE, timePickerEncender.getCurrentMinute());
 
-                editor.putString("hora_encendido",(format.format(calendar.getTime())));
+                preferencesManager.setStartTime(format.format(calendar.getTime()));
 
                 calendar.set(Calendar.HOUR_OF_DAY, timePickerApagado.getCurrentHour());
                 calendar.set(Calendar.MINUTE, timePickerApagado.getCurrentMinute());
-                editor.putString("hora_apagado",(format.format(calendar.getTime())));
-                editor.commit();
+                preferencesManager.setEndTime(format.format(calendar.getTime()));
                 ComprobarValidacionTabs();
 
             }
         });
 
-        setTimePickers();
+        configureTimePickers();
+        configureRadioButtonsOrientation();
 
         DeviceAdmin deviceAdmin = new DeviceAdmin(this);
         deviceAdmin.registerDeviceAdmin();
     }
 
-    private void setTimePickers() {
-        String hora_encendido = prefs.getString("hora_encendido", "00:00");
-        String hora_apagado = prefs.getString("hora_apagado", "00:00");
+    private void configureTimePickers() {
+        String hora_encendido = preferencesManager.getStartTime();
+        String hora_apagado = preferencesManager.getEndTime();
 
         SimpleDateFormat  format = new SimpleDateFormat("HH:mm");
         Date dateOn = null;
@@ -204,16 +201,27 @@ public class ConfigActivity extends BaseActivity{
         timePickerApagado.setCurrentMinute(c.get(Calendar.MINUTE));
     }
 
+    private void configureRadioButtonsOrientation() {
+        int orientation = preferencesManager.getOrientation();
+
+        if(orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+            radioButtonDerecha.setChecked(true);
+            radioButtonIzquierda.setChecked(false);
+        } else {
+            radioButtonIzquierda.setChecked(true);
+            radioButtonDerecha.setChecked(false);
+        }
+    }
+
     private void ComprobarValidacionTabs()
     {
          //si los valores ya estan
-        if(prefs.getBoolean("Conf_Hora",false)==true && prefs.getBoolean("Conf_Posicion",false)==true && prefs.getBoolean("Conf_Producto",false)==true)
-        {
+        if(preferencesManager.isTimeConfigured() &&
+                preferencesManager.isPositionConfigured() &&
+                preferencesManager.isProductConfigured()) {
             Intent mainIntent = new Intent().setClass(ConfigActivity.this, MainActivity.class);
             startActivity(mainIntent);
-            SharedPreferences.Editor editor= prefs.edit();
-            editor.putBoolean("primera_vez", false);
-            editor.commit();
+            preferencesManager.setAppFirtTime(false);
         }
     }
 
@@ -222,16 +230,12 @@ public class ConfigActivity extends BaseActivity{
         if(radioButtonDerecha.isChecked())
         {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            SharedPreferences.Editor editor= prefs.edit();
-            editor.putString("orientation","SCREEN_ORIENTATION_PORTRAIT");
-            editor.commit();
+            preferencesManager.setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
         else
         {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
-            SharedPreferences.Editor editor= prefs.edit();
-            editor.putString("orientation","SCREEN_ORIENTATION_REVERSE_PORTRAIT");
-            editor.commit();
+            preferencesManager.setOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
         }
     }
 
@@ -248,13 +252,5 @@ public class ConfigActivity extends BaseActivity{
         }
         //Debug:
         //Toast.makeText(ConfigActivity.this,text1.getText(), Toast.LENGTH_SHORT).show();
-    }
-
-    private void GuardarValor(String pestaña)
-    {
-        //inserto en las pref que la pestaña ha sido completada
-        SharedPreferences.Editor editor= prefs.edit();
-        editor.putBoolean(pestaña, true);
-        editor.commit();
     }
 }

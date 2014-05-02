@@ -42,13 +42,8 @@ public class MainActivity extends BaseActivity {
     public boolean valor = true;
     public boolean apagar_encenter = true;
     public int contador = 1;
-    private SharedPreferences prefs;
     //WebView webView;
     String Url;
-    private PowerManager pm;
-    KeyguardManager km;
-    KeyguardManager.KeyguardLock kl;
-    PowerManager.WakeLock wl;
     private int defTimeOut;
     private static final int DELAY = 1;
     private static final int DELAYORIG = 1800000;
@@ -59,29 +54,15 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*try {
-            //Me espero unos segundos a que acabe de encenderse el tablet
-            Thread.sleep(9000);
 
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }*/
-
-        //
-        pm = (PowerManager) getSystemService(POWER_SERVICE);
-        km = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
-        kl = km.newKeyguardLock("MyKeyguardLock");
-        wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "MyWakeLock");
 
         //Pantalla completa y mantiene la pantalla encendida
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        //getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
 
         setContentView(R.layout.activity_main);
-        //Inicializo las preferencias
-        prefs = getSharedPreferences("MisPreferencias", MODE_PRIVATE);
 
         //webView = new WebView(this);
 
@@ -118,13 +99,7 @@ public class MainActivity extends BaseActivity {
         //Elimina la barra inferior
         KillStatusBar();
         //Crea icono en el escritorio
-        CrearIconoLauncher();
-
-        /*//desbloquea y mantiene encendida la pantalla
-        kl.disableKeyguard();
-        wl.acquire();
-        Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, DELAYORIG);*/
-
+//        CrearIconoLauncher();
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -138,10 +113,9 @@ public class MainActivity extends BaseActivity {
             startService(myIntent);
         }
 
-        kl.disableKeyguard();
-
         DevicePolicyManager deviceManager = (DevicePolicyManager)getSystemService(
                 DEVICE_POLICY_SERVICE);
+
         ComponentName componentName = new ComponentName(this, AdminReceiver.class);
 
         if (!deviceManager.isAdminActive(componentName)) {
@@ -222,50 +196,45 @@ public class MainActivity extends BaseActivity {
     }
 
     private void GenerarUrl() {
-        SharedPreferences.Editor editor = prefs.edit();
-        boolean Url_existe = prefs.getBoolean(("existe_url"), false);
+        boolean Url_existe = preferencesManager.urlExist();
 
         if (Url_existe == false) {
             //inserto en las pref que la nueva url
-            editor.putBoolean("existe_url", true);
+            preferencesManager.setUrlExist(true);
             Url = "http://www.energysistem.com/tools/tiendas/etiquetas/index.html";
-            editor.putString("url", Url);
-            editor.commit();
+            preferencesManager.setUrl(Url);
 
         } else {
             if (Url == null)
-                Url = prefs.getString(("url"), "http://www.energysistem.com/tools/tiendas/etiquetas/index.html");
+                Url = preferencesManager.getUrl();
             else {
-                editor.putString("url", Url);
-                editor.commit();
+                preferencesManager.setUrl(Url);
             }
 
         }
     }
 
-    private void CrearIconoLauncher() {
-        SharedPreferences.Editor editor = prefs.edit();
-
-        boolean valor_icono = prefs.getBoolean("icono_launcher", false);
-        if (valor_icono == false) {
-            //where this is a context (e.g. your current activity)
-            final Intent shortcutIntent = new Intent(this, MainActivity.class);
-
-            final Intent intent = new Intent();
-            intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-            // Sets the custom shortcut's title
-            intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, getString(R.string.app_name));
-            // Set the custom shortcut icon
-            intent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(this, R.drawable.ic_launcher));
-            // add the shortcut
-            intent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
-            sendBroadcast(intent);
-
-            //inserto en las pref que ya hay un icono en el escritorio
-            editor.putBoolean("icono_launcher", true);
-            editor.commit();
-        }
-    }
+//    private void CrearIconoLauncher() {
+//        boolean valor_icono = prefs.getBoolean("icono_launcher", false);
+//        if (valor_icono == false) {
+//            //where this is a context (e.g. your current activity)
+//            final Intent shortcutIntent = new Intent(this, MainActivity.class);
+//
+//            final Intent intent = new Intent();
+//            intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
+//            // Sets the custom shortcut's title
+//            intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, getString(R.string.app_name));
+//            // Set the custom shortcut icon
+//            intent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(this, R.drawable.ic_launcher));
+//            // add the shortcut
+//            intent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+//            sendBroadcast(intent);
+//
+//            //inserto en las pref que ya hay un icono en el escritorio
+//            editor.putBoolean("icono_launcher", true);
+//            editor.commit();
+//        }
+//    }
 
     private void KillStatusBar() {
         Process proc = null;
