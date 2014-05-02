@@ -1,4 +1,4 @@
-package es.energysistem.etiqueta;
+package es.energysistem.etiqueta.receivers;
 
 /**
  * Created by Adrian on 18/10/13.
@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import es.energysistem.etiqueta.services.StartStopService;
+import es.energysistem.etiqueta.ui.activities.SplashScreenActivity;
 
 public class BReceiver extends BroadcastReceiver {
 

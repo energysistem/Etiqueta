@@ -26,7 +26,7 @@
         android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
         android:sharedUserId="android.uid.system" >
         <activity
-            android:name="es.energysistem.etiqueta.SplashScreenActivity"
+            android:name="es.energysistem.etiqueta.ui.activities.SplashScreenActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:launchMode="singleInstance" >
@@ -37,15 +37,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="es.energysistem.etiqueta.MainActivity"
+            android:name="es.energysistem.etiqueta.ui.activities.MainActivity"
             android:label="@string/app_name"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:launchMode="singleInstance" />
         <activity
-            android:name="es.energysistem.etiqueta.Config"
+            android:name="es.energysistem.etiqueta.ui.activities.ConfigActivity"
             android:label="@string/app_name" />
 
         <receiver
-            android:name="es.energysistem.etiqueta.BReceiver"
+            android:name="es.energysistem.etiqueta.receivers.BReceiver"
             android:enabled="true"
             android:permission="android.permission.RECEIVE_BOOT_COMPLETED" >
             <intent-filter>
@@ -56,7 +57,7 @@
         </receiver>
 
         <receiver
-            android:name="es.energysistem.etiqueta.recivers.AdminReceiver"
+            android:name="es.energysistem.etiqueta.receivers.AdminReceiver"
             android:permission="android.permission.BIND_DEVICE_ADMIN">
             <meta-data
                 android:name="android.app.device_admin"

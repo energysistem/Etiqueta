@@ -1,4 +1,4 @@
-package es.energysistem.etiqueta.recivers;
+package es.energysistem.etiqueta.receivers;
 
 import android.app.admin.DeviceAdminReceiver;
 

@@ -1,20 +1,19 @@
-package es.energysistem.etiqueta;
+package es.energysistem.etiqueta.ui.activities;
 
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.KeyguardManager;
 import android.app.ProgressDialog;
+import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -32,9 +31,10 @@ import android.widget.Toast;
 import java.io.IOException;
 
 import es.energy.myapplication.R;
+import es.energysistem.etiqueta.receivers.AdminReceiver;
 import es.energysistem.etiqueta.services.StartStopService;
 
-public class MainActivity extends Activity {
+public class MainActivity extends BaseActivity {
 
     final Context context = this;
     private ProgressDialog pDialog;
@@ -68,8 +68,8 @@ public class MainActivity extends Activity {
         }*/
 
         //
-        pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        km = (KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE);
+        pm = (PowerManager) getSystemService(POWER_SERVICE);
+        km = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
         kl = km.newKeyguardLock("MyKeyguardLock");
         wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "MyWakeLock");
 
@@ -81,14 +81,7 @@ public class MainActivity extends Activity {
 
         setContentView(R.layout.activity_main);
         //Inicializo las preferencias
-        prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
-
-        //establecer orientación
-        if (prefs.getString("orientation", "SCREEN_ORIENTATION_PORTRAIT") == "SCREEN_ORIENTATION_PORTRAIT") {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        } else if (prefs.getString("orientation", "SCREEN_ORIENTATION_REVERSE_PORTRAIT") == "SCREEN_ORIENTATION_REVERSE_PORTRAIT") {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
-        }
+        prefs = getSharedPreferences("MisPreferencias", MODE_PRIVATE);
 
         //webView = new WebView(this);
 
@@ -146,10 +139,22 @@ public class MainActivity extends Activity {
         }
 
         kl.disableKeyguard();
+
+        DevicePolicyManager deviceManager = (DevicePolicyManager)getSystemService(
+                DEVICE_POLICY_SERVICE);
+        ComponentName componentName = new ComponentName(this, AdminReceiver.class);
+
+        if (!deviceManager.isAdminActive(componentName)) {
+            Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, "Etiqueta Tienda Enregy");
+            intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION,  "Necesario para que la aplicacion funcione.");
+            startActivity(intent);
+        }
     }
 
     private boolean isMyServiceRunning() {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (StartStopService.class.getName().equals(service.service.getClassName())) {
                 return true;
@@ -180,17 +185,17 @@ public class MainActivity extends Activity {
                                 // get user input and set it to result
                                 // edit text
                                 //result.setText(userInput.getText());
-                                Toast.makeText(MainActivity.this, userInput.getText().toString(), Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(MainActivity.this, userInput.getText().toString(), Toast.LENGTH_SHORT).show();
 
                                 if (userInput.getText().toString().compareTo("5603") == 0) {
                                     //abre el panel de configuración
                                     //error en la contraseña
                                     //Toast.makeText(MainActivity.this, "CONTRASEÑA CORRECTA!", Toast.LENGTH_SHORT).show();
-                                    Intent mainIntent = new Intent().setClass(MainActivity.this, Config.class);
+                                    Intent mainIntent = new Intent().setClass(MainActivity.this, ConfigActivity.class);
                                     startActivity(mainIntent);
                                 } else {
                                     //error en la contraseña
-                                    Toast.makeText(MainActivity.this, findViewById(R.string.error_pass).toString(), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(MainActivity.this, R.string.error_pass, Toast.LENGTH_SHORT).show();
                                 }
                             }
                         }
@@ -212,25 +217,8 @@ public class MainActivity extends Activity {
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_CAMERA) {
-            event.startTracking(); // Needed to track long presses
-            return true;
-        } else if (keyCode == KeyEvent.KEYCODE_BACK) {
-            //event.startTracking(); // Needed to track long presses
-            return true;
-        }
-        Log.d("DEBUG", KeyEvent.keyCodeToString(keyCode));
-        return super.onKeyDown(keyCode, event);
-    }
+    public void onBackPressed() {
 
-    @Override
-    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_CAMERA) {
-            VentanaEmergente();
-            return true;
-        }
-        return super.onKeyLongPress(keyCode, event);
     }
 
     private void GenerarUrl() {

@@ -16,8 +16,8 @@ import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import es.energysistem.etiqueta.SplashScreenActivity;
-import es.energysistem.etiqueta.recivers.AdminReceiver;
+import es.energysistem.etiqueta.ui.activities.SplashScreenActivity;
+import es.energysistem.etiqueta.receivers.AdminReceiver;
 
 /**
  * Created by Vicente Giner Tendero on 29/04/2014.
@@ -26,8 +26,10 @@ public class StartStopService extends Service {
 
     private SharedPreferences preferences;
     private final long tiempoActualizacion = 30000;
-    private KeyguardManager.KeyguardLock keyguardLock;
+    private KeyguardManager km;
+    private PowerManager pm;
     private PowerManager.WakeLock wakeLock;
+    private  KeyguardManager.KeyguardLock keyguardLock;
     private DevicePolicyManager deviceManager;
     private ComponentName componentName;
 
@@ -45,9 +47,8 @@ public class StartStopService extends Service {
         preferences = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
 
         // Get the KeyguardLock and WakeLock for put screen on.
-        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        KeyguardManager km = (KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE);
-        wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "MyWakeLock");
+        pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        km = (KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE);
         keyguardLock = km.newKeyguardLock("MyKeyguardLock");
 
         // Get the DevicePolicyManager for lock the screen.
@@ -96,6 +97,9 @@ public class StartStopService extends Service {
     private void LockScreen() {
         // Lock screen
         keyguardLock.reenableKeyguard();
+        releaseWakeLock();
+        wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");
+        wakeLock.acquire();
         if (deviceManager.isAdminActive(componentName)) {
             deviceManager.lockNow();
         }
@@ -105,8 +109,16 @@ public class StartStopService extends Service {
     public void UnlockScreen() {
         // Unlock screen
         keyguardLock.disableKeyguard();
+        releaseWakeLock();
+        wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "MyWakeLock");
         wakeLock.acquire();
         Log.d("Screen", "UNLOCK");
+    }
+
+    private void releaseWakeLock() {
+        if(wakeLock != null && wakeLock.isHeld()) {
+            wakeLock.release();
+        }
     }
 
     private void OpenApp() {

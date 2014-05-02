@@ -1,18 +1,13 @@
-package es.energysistem.etiqueta;
+package es.energysistem.etiqueta.ui.activities;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.text.format.Time;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -21,22 +16,20 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TabHost;
-import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
-import java.text.Format;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
 import es.energy.myapplication.R;
+import es.energysistem.etiqueta.DeviceAdmin;
 
 /**
  * Created by Adrián. on 20/11/13.
  */
-public class Config extends Activity {
+public class ConfigActivity extends BaseActivity{
     private SharedPreferences prefs;
     private TabHost tabHost;
     private Boolean check_multiple=false;
@@ -47,7 +40,7 @@ public class Config extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.config);
+        setContentView(R.layout.activity_config);
 
         CheckBox checkBoxMultiple =(CheckBox)findViewById(R.id.checkBoxMultiple);
         final EditText text1=(EditText)findViewById(R.id.editText1);
@@ -66,22 +59,11 @@ public class Config extends Activity {
         webSettings.setJavaScriptEnabled(true);
         webViewPre.setInitialScale(50);
         //Inicializo las preferencias
-        prefs= getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
+        prefs= getSharedPreferences("MisPreferencias", MODE_PRIVATE);
         this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         timePickerApagado.setIs24HourView(true);
         timePickerEncender.setIs24HourView(true);
-
-        //establecer orientación
-        if(prefs.getString("orientation","SCREEN_ORIENTATION_PORTRAIT")== "SCREEN_ORIENTATION_PORTRAIT")
-        {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        }
-        else if(prefs.getString("orientation","SCREEN_ORIENTATION_REVERSE_PORTRAIT")== "SCREEN_ORIENTATION_REVERSE_PORTRAIT")
-        {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
-
-        }
 
         tabHost=(TabHost)findViewById(R.id.tabHost);
         tabHost.setup();
@@ -129,7 +111,7 @@ public class Config extends Activity {
 
                 if(text1.length() !=5 || ((text2.getVisibility()==View.VISIBLE && text2.length()!=5) || (text3.getVisibility()==View.VISIBLE && text3.length()!=5)) )
                 {
-                    new AlertDialog.Builder(Config.this)
+                    new AlertDialog.Builder(ConfigActivity.this)
                             .setTitle(getApplicationContext().getString(R.string.atencion))
                             .setMessage(getApplicationContext().getString(R.string.mensaje_codigo))
                             .setPositiveButton(getApplicationContext().getString(R.string.aceptar), new DialogInterface.OnClickListener() {
@@ -193,6 +175,9 @@ public class Config extends Activity {
         });
 
         setTimePickers();
+
+        DeviceAdmin deviceAdmin = new DeviceAdmin(this);
+        deviceAdmin.registerDeviceAdmin();
     }
 
     private void setTimePickers() {
@@ -224,7 +209,7 @@ public class Config extends Activity {
          //si los valores ya estan
         if(prefs.getBoolean("Conf_Hora",false)==true && prefs.getBoolean("Conf_Posicion",false)==true && prefs.getBoolean("Conf_Producto",false)==true)
         {
-            Intent mainIntent = new Intent().setClass(Config.this, MainActivity.class);
+            Intent mainIntent = new Intent().setClass(ConfigActivity.this, MainActivity.class);
             startActivity(mainIntent);
             SharedPreferences.Editor editor= prefs.edit();
             editor.putBoolean("primera_vez", false);
@@ -262,8 +247,9 @@ public class Config extends Activity {
             webViewPre.loadUrl("http://energysistem.com/tools/tiendas/etiquetas/selector.html?number=3&code1="+text1.getText()+"&code2="+text2.getText()+"&code3="+text3.getText());
         }
         //Debug:
-        //Toast.makeText(Config.this,text1.getText(), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(ConfigActivity.this,text1.getText(), Toast.LENGTH_SHORT).show();
     }
+
     private void GuardarValor(String pestaña)
     {
         //inserto en las pref que la pestaña ha sido completada
@@ -271,5 +257,4 @@ public class Config extends Activity {
         editor.putBoolean(pestaña, true);
         editor.commit();
     }
-
 }
