@@ -1,8 +1,6 @@
 package es.energysistem.etiqueta.ui.activities;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.Window;
 
@@ -18,19 +16,11 @@ public class SplashScreenActivity extends BaseActivity {
 
     // Set the duration of the splash screen
     private static final long SPLASH_SCREEN_DELAY = 6000;
-    private boolean primera_vez;
-
+    private boolean firstTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        try {
-            //Me espero unos segundos a que acabe de encenderse el tablet
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
         // Hide title bar
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -38,20 +28,18 @@ public class SplashScreenActivity extends BaseActivity {
         setContentView(R.layout.activity_splash_screen);
 
         //Comprueba si es la primera vez que se abre la apliación
-        primera_vez = preferencesManager.isAppFirstTime();
+        firstTime = preferencesManager.isAppFirstTime();
 
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-
                 // Start the next activity
-                // si es la primera vez, habro el panel de configuración
-                //TODO: estaria bien comprobar que exixten las preferencias necesarias
-                Intent mainIntent = null;
-                if (primera_vez) {
+                //TODO: would be nice to check that the necessary preferences exist
+                Intent mainIntent;
+                if (firstTime) {  // If it's the first time I open the ConfigActivity
                     mainIntent = new Intent().setClass(SplashScreenActivity.this, ConfigActivity.class);
                     startActivity(mainIntent);
-                } else { //si no es la primera vez abro directamente la etiqueta.
+                } else { // If not the first time I open the MainActivity directly.
                     mainIntent = new Intent().setClass(SplashScreenActivity.this, MainActivity.class);
                 }
                 startActivity(mainIntent);

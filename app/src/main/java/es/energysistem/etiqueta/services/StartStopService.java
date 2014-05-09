@@ -16,6 +16,8 @@ import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import es.energysistem.etiqueta.PreferencesManager;
+import es.energysistem.etiqueta.ui.activities.MainActivity;
 import es.energysistem.etiqueta.ui.activities.SplashScreenActivity;
 import es.energysistem.etiqueta.receivers.AdminReceiver;
 
@@ -24,27 +26,26 @@ import es.energysistem.etiqueta.receivers.AdminReceiver;
  */
 public class StartStopService extends Service {
 
-    private SharedPreferences preferences;
-    private final long tiempoActualizacion = 30000;
-    private KeyguardManager km;
     private PowerManager pm;
     private PowerManager.WakeLock wakeLock;
     private  KeyguardManager.KeyguardLock keyguardLock;
     private DevicePolicyManager deviceManager;
     private ComponentName componentName;
+    private PreferencesManager preferencesManager;
 
     @Override
     public void onCreate(){
         // Create a timer to check the screen on/off time.
+        long tiempoActualizacion = 30000;
         Timer timer = new Timer();
         timer.schedule(task, tiempoActualizacion, tiempoActualizacion);
 
         // Get the preferences to check the screen on/off time.
-        preferences = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
+        preferencesManager = new PreferencesManager(this);
 
         // Get the KeyguardLock and WakeLock for put screen on.
         pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        km = (KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE);
+        KeyguardManager km = (KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE);
         keyguardLock = km.newKeyguardLock("MyKeyguardLock");
 
         // Get the DevicePolicyManager for lock the screen.
@@ -77,8 +78,8 @@ public class StartStopService extends Service {
             String nowString = format.format(c.getTime());
 
             // Get the preferences on/off time to compare
-            String hora_encendido = preferences.getString("hora_encendido", "00:00");
-            String hora_apagado = preferences.getString("hora_apagado", "00:00");
+            String hora_encendido = preferencesManager.getStartTime();
+            String hora_apagado = preferencesManager.getEndTime();
 
             //Compare the times and do the corresponding action
             if(hora_encendido.equals(nowString)) {
@@ -117,7 +118,7 @@ public class StartStopService extends Service {
 
     private void OpenApp() {
         // Launch Application
-        Intent intent = new Intent(getApplicationContext(), SplashScreenActivity.class);
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }

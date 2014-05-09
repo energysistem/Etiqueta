@@ -27,7 +27,6 @@ public class BaseActivity extends Activity {
     protected void onResume() {
         super.onResume();
         checkOrientation();
-        deviceAdmin.registerDeviceAdmin();
     }
 
     protected void checkOrientation() {
@@ -39,13 +38,12 @@ public class BaseActivity extends Activity {
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // Check which request we're responding to
-        if (requestCode == DeviceAdmin.DEVICE_ADMIN_REQUEST) {
-            if (resultCode != RESULT_OK) {
-                System.exit(0);
-            }
-        }
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        if (requestCode == DeviceAdmin.DEVICE_ADMIN_REQUEST) {
+//            if (resultCode != RESULT_OK) {
+//                System.exit(0);
+//            }
+//        }
+//    }
 }

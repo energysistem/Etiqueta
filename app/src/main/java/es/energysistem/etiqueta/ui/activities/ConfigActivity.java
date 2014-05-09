@@ -3,7 +3,6 @@ package es.energysistem.etiqueta.ui.activities;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
@@ -213,8 +212,7 @@ public class ConfigActivity extends BaseActivity{
         }
     }
 
-    private void ComprobarValidacionTabs()
-    {
+    private void ComprobarValidacionTabs() {
          //si los valores ya estan
         if(preferencesManager.isTimeConfigured() &&
                 preferencesManager.isPositionConfigured() &&
